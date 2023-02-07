@@ -1,11 +1,22 @@
 #include "TriRenderer.hpp"
 #include <iostream>
-
 float vertices[] = {
     // clang-format off
-    -0.5f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.0f, 0.5f, 0.0f
+    0.5f, 0.5f, 0.0f,   // 右上角
+    0.5f, -0.5f, 0.0f,  // 右下角
+    -0.5f, -0.5f, 0.0f, // 左下角
+    -0.5f, 0.5f, 0.0f   // 左上角
+    // clang-format on
+};
+
+unsigned int indices[] = {
+    // 注意索引从0开始!
+    // 此例的索引(0,1,2,3)就是顶点数组vertices的下标，
+    // 这样可以由下标代表顶点组合成矩形
+
+    // clang-format off
+    0, 1, 3, // 第一个三角形
+    1, 2, 3  // 第二个三角形
     // clang-format on
 };
 
@@ -28,6 +39,7 @@ const char* fragmentShaderSource =
 unsigned int VBO;
 unsigned int shaderProgram;
 unsigned int VAO;
+unsigned int EBO;
 
 TriRenderer::TriRenderer()
 {
@@ -82,6 +94,11 @@ TriRenderer::TriRenderer()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    // EBO
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     // Vertex Attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -91,5 +108,6 @@ void TriRenderer::render()
 {
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }
