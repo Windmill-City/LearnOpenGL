@@ -102,6 +102,9 @@ TriRenderer::TriRenderer()
     // Vertex Attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    // Wireframe
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void TriRenderer::render()
