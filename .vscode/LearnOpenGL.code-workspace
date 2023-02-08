@@ -5,6 +5,17 @@
 		}
 	],
 	"settings": {
-		"C_Cpp.intelliSenseEngine": "default"
+		"C_Cpp.intelliSenseEngine": "default",
+		"files.associations": {
+			"*.json.liquid": "json",
+			"*.yaml.liquid": "yaml",
+			"*.md.liquid": "markdown",
+			"*.js.liquid": "liquid-javascript",
+			"*.css.liquid": "liquid-css",
+			"*.scss.liquid": "liquid-scss",
+			"iosfwd": "cpp",
+			"xstring": "cpp",
+			"format": "cpp"
+		}
 	}
 }

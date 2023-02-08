@@ -1,11 +1,16 @@
 #include "TriRenderer.hpp"
+#include <format>
+#include <fstream>
 #include <iostream>
+#include <string>
+
 float vertices[] = {
     // clang-format off
     0.5f, 0.5f, 0.0f,   // 右上角
     0.5f, -0.5f, 0.0f,  // 右下角
     -0.5f, -0.5f, 0.0f, // 左下角
     -0.5f, 0.5f, 0.0f   // 左上角
+    -0.0f, 0.0f, 0.0f   // 中间
     // clang-format on
 };
 
@@ -15,38 +20,43 @@ unsigned int indices[] = {
     // 这样可以由下标代表顶点组合成矩形
 
     // clang-format off
-    0, 1, 3, // 第一个三角形
-    1, 2, 3  // 第二个三角形
+    0, 1, 4, // 第一个三角形
+    2, 3, 4  // 第二个三角形
     // clang-format on
 };
 
-const char* vertexShaderSource =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-
-const char* fragmentShaderSource =
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
-
-unsigned int VBO;
 unsigned int shaderProgram;
+unsigned int VBO;
 unsigned int VAO;
 unsigned int EBO;
 
-TriRenderer::TriRenderer()
+/**
+ * @brief Read shader file and return source string
+ *
+ * @param path path to shader file
+ * @return std::string source string
+ */
+std::string readShaderFile(const std::string path)
+{
+    std::ifstream shaderFile(path, std::ios::binary | std::ios::ate);
+    if (!shaderFile) throw std::exception(std::format("Shader file: Failed to open {}!", path).c_str());
+
+    auto        size = shaderFile.tellg();
+    std::string source(size, '\0');
+    shaderFile.seekg(0);
+    shaderFile.read(&source[0], size);
+
+    return source;
+}
+
+void loadShader()
 {
     // Vertex Shader
     unsigned int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    auto sourceStr = readShaderFile("assets/shader/VertexShader.txt");
+    auto source    = sourceStr.c_str();
+    glShaderSource(vertexShader, 1, &source, NULL);
     glCompileShader(vertexShader);
     // Check if shader compile failed
     int  success;
@@ -56,12 +66,15 @@ TriRenderer::TriRenderer()
     {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        return;
     }
 
     // Fragment Shader
+    sourceStr = readShaderFile("assets/shader/FragmentShader.txt");
+    source    = sourceStr.c_str();
     unsigned int fragmentShader;
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glShaderSource(fragmentShader, 1, &source, NULL);
     glCompileShader(fragmentShader);
     // Check if shader compile failed
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
@@ -69,6 +82,7 @@ TriRenderer::TriRenderer()
     {
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        return;
     }
 
     // Shader Program
@@ -81,9 +95,15 @@ TriRenderer::TriRenderer()
     {
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::LINK_FAILED\n" << infoLog << std::endl;
+        return;
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+}
+
+TriRenderer::TriRenderer()
+{
+    loadShader();
 
     // VAO
     glGenVertexArrays(1, &VAO);
@@ -104,7 +124,7 @@ TriRenderer::TriRenderer()
     glEnableVertexAttribArray(0);
 
     // Wireframe
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void TriRenderer::render()
