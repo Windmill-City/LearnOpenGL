@@ -58,13 +58,15 @@ struct ResourceLocation
 
 struct ResourceProvider
 {
+    using ResourceStream = std::unique_ptr<std::istream>;
+
     /**
      * @brief Get file stream by ResourceLocation
      *
      * @param loc resource location
      * @return std::istream file stream or empty
      */
-    virtual std::ifstream get(const ResourceLocation& loc) = 0;
+    virtual ResourceStream get(const ResourceLocation& loc) = 0;
 
     ResourceProvider() = default;
 
@@ -77,17 +79,18 @@ struct ResourceProvider
 
 struct ResourceManager : public ResourceProvider
 {
-  public:
-    const static std::u16string DEFAULT_ASSETS_DIR;
+    using ProviderHolder = const std::unordered_map<std::u16string, std::unique_ptr<ResourceProvider>>;
+    
+    static std::u16string DEFAULT_ASSETS_DIR;
 
     /**
      * @brief Domain providers
      * Key: Domain, Value: Provider
      */
-    const std::unordered_map<std::u16string, std::unique_ptr<ResourceProvider>> providers;
+    const ProviderHolder providers;
 
     ResourceManager();
-    virtual std::ifstream get(const ResourceLocation& loc) override;
+    virtual ResourceStream get(const ResourceLocation& loc) override;
 };
 
 struct EmbedResource
@@ -96,7 +99,7 @@ struct EmbedResource
      * @brief Resource index
      * Key: Path, Val:Pair<Offset,Size>
      */
-    using Index_t = std::unordered_map<std::u16string, const std::pair<size_t, size_t>>;
+    using Index = std::unordered_map<std::u16string, const std::pair<size_t, size_t>>;
 
     /**
      * @brief Resource domain
@@ -108,12 +111,12 @@ struct EmbedResource
      *
      */
     const uint8_t*       block;
-    const Index_t        index;
+    const Index          index;
 
-    EmbedResource(const Index_t index, const uint8_t* block);
+    EmbedResource(const Index index, const uint8_t* block);
     EmbedResource(const uint8_t* index, const uint8_t* block);
 
-    static Index_t _make_index(const uint8_t* index);
+    static Index _make_index(const uint8_t* index);
 
     template <class T, typename = std::enable_if_t<std::is_trivial_v<T>>>
     static T _get(const uint8_t* index, size_t& offset)
@@ -131,7 +134,7 @@ struct EmbedProvider : public ResourceProvider
     const std::unique_ptr<EmbedResource> res;
 
     EmbedProvider(const std::unique_ptr<const EmbedResource> res);
-    virtual std::ifstream get(const ResourceLocation& loc) override;
+    virtual ResourceStream get(const ResourceLocation& loc) override;
 };
 
 struct FileProvider : public ResourceProvider
@@ -139,5 +142,5 @@ struct FileProvider : public ResourceProvider
     const std::filesystem::path root;
 
     FileProvider(const std::u16string root);
-    virtual std::ifstream get(const ResourceLocation& loc) override;
+    virtual ResourceStream get(const ResourceLocation& loc) override;
 };

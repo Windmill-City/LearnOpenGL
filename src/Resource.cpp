@@ -55,7 +55,7 @@ ResourceManager::ResourceManager()
     EmbedResource(_embed_indexAssets, _embed_blockAssets);
 }
 
-std::ifstream ResourceManager::get(const ResourceLocation& loc)
+ResourceProvider::ResourceStream ResourceManager::get(const ResourceLocation& loc)
 {
     auto it = providers.find(loc.domain);
     if (it != providers.end())
@@ -66,7 +66,7 @@ std::ifstream ResourceManager::get(const ResourceLocation& loc)
     return {};
 }
 
-std::ifstream EmbedProvider::get(const ResourceLocation& loc)
+ResourceProvider::ResourceStream EmbedProvider::get(const ResourceLocation& loc)
 {
     return {};
 }
@@ -76,13 +76,13 @@ FileProvider::FileProvider(const std::u16string root)
 {
 }
 
-std::ifstream FileProvider::get(const ResourceLocation& loc)
+ResourceProvider::ResourceStream FileProvider::get(const ResourceLocation& loc)
 {
-    auto stream = std::ifstream(root / loc.path, std::ios_base::binary);
+    auto stream = std::make_unique<std::ifstream>(root / loc.path, std::ios_base::binary);
     return stream;
 }
 
-EmbedResource::EmbedResource(const Index_t index, const uint8_t* block)
+EmbedResource::EmbedResource(const Index index, const uint8_t* block)
     : index(index)
     , block(block)
 {
@@ -93,9 +93,9 @@ EmbedResource::EmbedResource(const uint8_t* index, const uint8_t* block)
 {
 }
 
-EmbedResource::Index_t EmbedResource::_make_index(const uint8_t* index)
+EmbedResource::Index EmbedResource::_make_index(const uint8_t* index)
 {
-    EmbedResource::Index_t _index;
+    EmbedResource::Index _index;
 
     size_t offset = 0;
     auto   count  = _get<size_t>(index, offset);
