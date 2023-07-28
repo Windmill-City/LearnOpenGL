@@ -94,7 +94,7 @@ BreakStringLiterals: false
 AllowShortIfStatementsOnASingleLine: WithoutElse
 
 # Switch Case
-AllowShortCaseLabelsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
 
 # Lambda
 AllowShortLambdasOnASingleLine: All
