@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <Resource.hpp>
 #include <TriRenderer.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -41,6 +42,10 @@ int main()
     }
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     // GLAD Init End
+
+    // ResourceManager Start
+    ResourceManager resMan;
+    // ResourceManager End
 
     // TriRenderer
     auto renderer = TriRenderer();

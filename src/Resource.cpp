@@ -1,5 +1,8 @@
 #include "Resource.hpp"
+#include <array>
+#include <codecvt>
 #include <exception>
+#include <iostream>
 
 const char16_t       ResourceLocation::DOMAIN_SEPARATOR = u':';
 const std::u16string ResourceLocation::DEFAULT_DOMAIN   = u"default";
@@ -44,8 +47,12 @@ std::u16string ResourceLocation::getPath(const std::u16string key)
 
 static const std::u16string DEFAULT_ASSETS_DIR = u"assets";
 
+extern "C" const uint8_t _embed_indexAssets[];
+extern "C" const uint8_t _embed_blockAssets[];
+
 ResourceManager::ResourceManager()
 {
+    EmbedResource(_embed_indexAssets, _embed_blockAssets);
 }
 
 std::ifstream ResourceManager::get(const ResourceLocation& loc)
@@ -75,6 +82,44 @@ std::ifstream FileProvider::get(const ResourceLocation& loc)
     return stream;
 }
 
-EmbedResource::EmbedResource()
+EmbedResource::EmbedResource(const Index_t index, const uint8_t* block)
+    : index(index)
+    , block(block)
 {
+}
+
+EmbedResource::EmbedResource(const uint8_t* index, const uint8_t* block)
+    : EmbedResource(_make_index(index), block)
+{
+}
+
+EmbedResource::Index_t EmbedResource::_make_index(const uint8_t* index)
+{
+    EmbedResource::Index_t _index;
+
+    size_t offset = 0;
+    auto   count  = _get<size_t>(index, offset);
+    for (size_t i = 0; i < count; i++)
+    {
+        auto e_path   = _get_str(index, offset);
+        auto e_size   = _get<size_t>(index, offset);
+        auto e_offset = _get<size_t>(index, offset);
+
+        _index.emplace(e_path, std::pair(e_offset, e_size));
+        std::wcout << "Path: " << (wchar_t*)e_path.c_str() << " Offset: " << e_offset << " Size: " << e_size
+                   << std::endl;
+    }
+
+    return _index;
+}
+
+std::u16string EmbedResource::_get_str(const uint8_t* index, size_t& offset)
+{
+    // String size
+    auto str_s = _get<size_t>(index, offset);
+
+    std::u16string str((std::u16string::value_type*)&index[offset], str_s);
+    offset += str_s;
+
+    return str;
 }

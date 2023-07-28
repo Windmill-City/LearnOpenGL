@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <list>
 
 #include <cmdline.hpp>
 
@@ -9,7 +10,7 @@ int main(int argc, char* argv[])
 {
     cmdline::parser arg;
 
-    arg.add<std::string>("embed", 'e', "embed file dir");
+    arg.add<std::string>("embed", 'e', "embed file root");
     arg.add<std::string>("index", 'i', "asset index output file");
     arg.add<std::string>("block", 'b', "asset block output file");
 
@@ -37,7 +38,7 @@ int main(int argc, char* argv[])
 
     /**
      * Memory Layout
-     * |Path Size(size_t)|Path String(UTF-8)|File Block Offset(size_t)|File Block Size(size_t)|
+     * |Element Count(size_t)|Path Size(size_t)|Path String(UTF-8)|File Block Size(size_t)|File Block Offset(size_t)|
      */
     std::ofstream indexAssets;
     indexAssets.exceptions(std::ios_base::failbit | std::ios_base::badbit);
@@ -50,40 +51,47 @@ int main(int argc, char* argv[])
     blockAssets.exceptions(std::ios_base::failbit | std::ios_base::badbit);
     blockAssets.open(EMBED_ASSETS_BLOCK_FILE, std::ios_base::binary);
 
-    size_t offset = 0;
+    std::list<std::filesystem::path> files;
+    for (auto& it : std::filesystem::recursive_directory_iterator(EMBED_ASSETS_DIR))
+    {
+        if (!it.is_directory())
+        {
+            files.push_back(it.path());
+        }
+    }
+
+    // Element count
+    auto count = files.size();
+    indexAssets.write((char*)&count, sizeof(count));
 
     std::ifstream fs;
     fs.exceptions(std::ios_base::failbit | std::ios_base::badbit);
 
-    for (auto& it : std::filesystem::recursive_directory_iterator(EMBED_ASSETS_DIR))
+    size_t offset = 0;
+
+    for (auto& it : files)
     {
-        if (it.is_directory())
-            std::cout << "folder: [" << it.path().string() << "]" << std::endl;
-        else
-        {
-            // Resource path
-            auto   path   = std::filesystem::relative(it.path(), EMBED_ASSETS_DIR).u8string();
-            size_t path_s = path.size();
-            indexAssets.write((char*)&path_s, sizeof(path_s));
-            indexAssets.write((char*)path.data(), path.size());
+        // Resource data
+        fs.open(it, std::ios_base::binary);
+        blockAssets << fs.rdbuf();
 
-            // Resource offset
-            indexAssets.write((char*)&offset, sizeof(offset));
-            offset += it.file_size();
+        // Resource path
+        auto path = std::filesystem::relative(it, EMBED_ASSETS_DIR).u16string();
+        std::replace(path.begin(), path.end(), '\\', '/');
+        auto path_s = (path.size() + 1) * sizeof(std::u16string::value_type);
+        indexAssets.write((char*)&path_s, sizeof(path_s));
+        indexAssets.write((char*)path.data(), path_s);
 
-            // Resource file
-            fs.open(it.path(), std::ios_base::binary);
+        // Resource size
+        size_t file_s = fs.tellg();
+        indexAssets.write((char*)&file_s, sizeof(file_s));
+        fs.close();
 
-            // Write data block
-            blockAssets << fs.rdbuf();
+        // Resource offset
+        indexAssets.write((char*)&offset, sizeof(offset));
+        offset += file_s;
 
-            // Resource size
-            size_t file_s = fs.tellg();
-            indexAssets.write((char*)&file_s, sizeof(file_s));
-            fs.close();
-
-            std::cout << "inserted file: [" << it.path().string() << "], size: " << file_s << std::endl;
-        }
+        std::cout << "inserted file: [" << it.string() << "], size: " << file_s << std::endl;
     }
 
     indexAssets.close();

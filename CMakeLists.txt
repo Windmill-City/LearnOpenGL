@@ -42,8 +42,8 @@ if(MSVC)
 
     add_custom_target(BuildEmbed
         COMMAND $<TARGET_FILE:ResourceBuilder> -e ${CMAKE_CURRENT_SOURCE_DIR}/embed -i indexAssets -b blockAssets
-        COMMAND $<TARGET_FILE:MSVC_bin2obj> -b indexAssets -o indexAssetsObj -s _embed_indexAssets
-        COMMAND $<TARGET_FILE:MSVC_bin2obj> -b blockAssets -o blockAssetsObj -s _embed_blockAssets
+        COMMAND $<TARGET_FILE:MSVC_bin2obj> -b indexAssets -o indexAssets.obj -s _embed_indexAssets
+        COMMAND $<TARGET_FILE:MSVC_bin2obj> -b blockAssets -o blockAssets.obj -s _embed_blockAssets
     )
     add_dependencies(BuildEmbed ResourceBuilder MSVC_bin2obj)
 else(MSVC)
@@ -54,3 +54,6 @@ else(MSVC)
     )
     add_dependencies(BuildEmbed ResourceBuilder)
 endif(MSVC)
+
+target_link_libraries(LearnOpenGL PRIVATE ${CMAKE_BINARY_DIR}/indexAssets ${CMAKE_BINARY_DIR}/blockAssets)
+add_dependencies(LearnOpenGL BuildEmbed)

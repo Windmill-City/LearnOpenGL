@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
     case 8192: imgSection.Characteristics = IMAGE_SCN_ALIGN_8192BYTES; break;
     }
 
-    imgSection.Characteristics |= IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_SHARED;
+    imgSection.Characteristics |= IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_READ;
 
     memcpy(imgSymbol[0].N.ShortName, section, IMAGE_SIZEOF_SHORT_NAME);
     imgSymbol[0].SectionNumber = 1;

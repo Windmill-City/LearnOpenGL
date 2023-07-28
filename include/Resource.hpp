@@ -92,18 +92,33 @@ struct ResourceManager : public ResourceProvider
 struct EmbedResource
 {
     /**
+     * @brief Resource index
+     * Key: Path, Val:Pair<Offset,Size>
+     */
+    using Index_t = std::unordered_map<std::u16string, const std::pair<size_t, size_t>>;
+
+    /**
      * @brief Resource domain
      *
      */
     const std::u16string domain;
+    const uint8_t*       block;
+    const Index_t        index;
 
-    /**
-     * @brief Resource elements
-     * Key: Path, Val:Pair<Offset,Size>
-     */
-    const std::unordered_map<std::u16string, const std::pair<size_t, size_t>> elements;
+    EmbedResource(const Index_t index, const uint8_t* block);
+    EmbedResource(const uint8_t* index, const uint8_t* block);
 
-    EmbedResource();
+    static Index_t _make_index(const uint8_t* index);
+
+    template <class T>
+    static T _get(const uint8_t* index, size_t& offset)
+    {
+        auto val = *(T*)&index[offset];
+        offset += sizeof(T);
+        return val;
+    }
+
+    static std::u16string _get_str(const uint8_t* index, size_t& offset);
 };
 
 struct EmbedProvider : public ResourceProvider
