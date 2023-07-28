@@ -101,7 +101,7 @@ EmbedResource::Index_t EmbedResource::_make_index(const uint8_t* index)
     auto   count  = _get<size_t>(index, offset);
     for (size_t i = 0; i < count; i++)
     {
-        auto e_path   = _get_str(index, offset);
+        auto e_path   = _get_path(index, offset);
         auto e_size   = _get<size_t>(index, offset);
         auto e_offset = _get<size_t>(index, offset);
 
@@ -113,7 +113,7 @@ EmbedResource::Index_t EmbedResource::_make_index(const uint8_t* index)
     return _index;
 }
 
-std::u16string EmbedResource::_get_str(const uint8_t* index, size_t& offset)
+std::u16string EmbedResource::_get_path(const uint8_t* index, size_t& offset)
 {
     // String size
     auto str_s = _get<size_t>(index, offset);

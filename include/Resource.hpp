@@ -3,6 +3,7 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 
 struct ResourceLocation
@@ -102,6 +103,10 @@ struct EmbedResource
      *
      */
     const std::u16string domain;
+    /**
+     * @brief Resource block, contains continuously stored files
+     *
+     */
     const uint8_t*       block;
     const Index_t        index;
 
@@ -110,7 +115,7 @@ struct EmbedResource
 
     static Index_t _make_index(const uint8_t* index);
 
-    template <class T>
+    template <class T, typename = std::enable_if_t<std::is_trivial_v<T>>>
     static T _get(const uint8_t* index, size_t& offset)
     {
         auto val = *(T*)&index[offset];
@@ -118,7 +123,7 @@ struct EmbedResource
         return val;
     }
 
-    static std::u16string _get_str(const uint8_t* index, size_t& offset);
+    static std::u16string _get_path(const uint8_t* index, size_t& offset);
 };
 
 struct EmbedProvider : public ResourceProvider
