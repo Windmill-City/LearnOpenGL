@@ -26,6 +26,12 @@ struct ResourceLocation
      *
      * @param key resource key, eg: default:shader/VertexShader.txt
      */
+    ResourceLocation(const std::u16string::value_type* key);
+    /**
+     * @brief Construct a new Resource Location object
+     *
+     * @param key resource key, eg: default:shader/VertexShader.txt
+     */
     ResourceLocation(const std::u16string key);
 
     /**
