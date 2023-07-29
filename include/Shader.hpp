@@ -7,20 +7,25 @@
 #include <sstream>
 #include <string>
 
+#include "Resource.hpp"
+
 class Shader
 {
   protected:
     unsigned int ID;
 
   public:
-    Shader(const std::string vertexPath, const std::string fragmentPath);
+    Shader(ResourceStream vShader, ResourceStream fShader);
     ~Shader();
+
+    Shader(Shader&& _Right);
+    Shader(const Shader&) = delete;
 
     /**
      * @brief Set it to the current shader
      *
      */
-    void use();
+    void use() const;
     /**
      * @brief Set uniform bool value
      *

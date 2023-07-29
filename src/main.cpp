@@ -46,11 +46,13 @@ int main()
 
     // ResourceManager Start
     ResourceManager resMan;
-    auto            stream = resMan.get(ResourceLocation(u"embed:shader/FragmentShader.txt"));
     // ResourceManager End
 
     // TriRenderer
-    auto renderer = TriRenderer();
+    auto   vShader = resMan.get(ResourceLocation(u"embed:shader/VertexShader.txt"));
+    auto   fShader = resMan.get(ResourceLocation(u"embed:shader/FragmentShader.txt"));
+    Shader shader(std::move(vShader), std::move(fShader));
+    auto   renderer = TriRenderer(std::move(shader));
 
     // Event Loop
     while (!glfwWindowShouldClose(window))

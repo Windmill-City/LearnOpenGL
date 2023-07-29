@@ -3,9 +3,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-class TriRenderer
+#include "Shader.hpp"
+
+struct TriRenderer
 {
-public:
-    TriRenderer();
+    const Shader shader;
+
+    TriRenderer(Shader shader);
     void render();
 };

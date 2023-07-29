@@ -1,5 +1,4 @@
 #include "TriRenderer.hpp"
-#include "Shader.hpp"
 #include <format>
 #include <fstream>
 #include <iostream>
@@ -33,12 +32,9 @@ float texCoords[] = {
 
 unsigned int VAO;
 
-Shader* shader;
-
-TriRenderer::TriRenderer()
+TriRenderer::TriRenderer(Shader shader)
+    : shader(std::move(shader))
 {
-    shader = new Shader("assets/shader/VertexShader.txt", "assets/shader/FragmentShader.txt");
-
     // VAO
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -69,7 +65,7 @@ TriRenderer::TriRenderer()
 
 void TriRenderer::render()
 {
-    shader->use();
+    shader.use();
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
