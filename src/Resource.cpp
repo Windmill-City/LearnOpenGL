@@ -7,10 +7,9 @@
 const char16_t ResourceLocation::DOMAIN_SEPARATOR = u':';
 
 ResourceLocation::ResourceLocation(const std::u16string::value_type* key)
-    : ResourceLocation(key)
+    : ResourceLocation(std::u16string(key))
 {
 }
-
 ResourceLocation::ResourceLocation(const std::u16string key)
     : ResourceLocation(getDomain(key), getPath(key))
 {
