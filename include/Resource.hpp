@@ -8,9 +8,7 @@
 
 struct ResourceLocation
 {
-    const static char16_t       DOMAIN_SEPARATOR;
-    const static std::u16string DEFAULT_DOMAIN;
-    const static std::u16string EMBED_DOMAIN;
+    const static char16_t DOMAIN_SEPARATOR;
 
     /**
      * @brief Resource n
@@ -56,15 +54,15 @@ struct ResourceLocation
     static std::u16string getPath(const std::u16string key);
 };
 
+using ResourceStream = std::unique_ptr<std::istream>;
+
 struct ResourceProvider
 {
-    using ResourceStream = std::unique_ptr<std::istream>;
-
     /**
      * @brief Get file stream by ResourceLocation
      *
      * @param loc resource location
-     * @return std::istream file stream or empty
+     * @return ResourceStream a valid stream or nullptr
      */
     virtual ResourceStream get(const ResourceLocation& loc) = 0;
 
@@ -79,22 +77,44 @@ struct ResourceProvider
 
 struct ResourceManager : public ResourceProvider
 {
-    using ProviderHolder = const std::unordered_map<std::u16string, std::unique_ptr<ResourceProvider>>;
-    
-    static std::u16string DEFAULT_ASSETS_DIR;
+    using ProviderHolder = std::unordered_map<std::u16string, std::unique_ptr<ResourceProvider>>;
+
+    const static std::u16string DEFAULT_ASSETS_DIR;
+    const static std::u16string DEFAULT_DOMAIN;
+    const static std::u16string EMBED_DOMAIN;
 
     /**
      * @brief Domain providers
      * Key: Domain, Value: Provider
      */
-    const ProviderHolder providers;
+    ProviderHolder providers;
 
     ResourceManager();
     virtual ResourceStream get(const ResourceLocation& loc) override;
 };
 
-struct EmbedResource
+struct EmbedResource : public ResourceProvider
 {
+    struct membuf : std::streambuf
+    {
+        membuf(const uint8_t* base, size_t size)
+        {
+            char* p(reinterpret_cast<char*>(const_cast<uint8_t*>(base)));
+            this->setg(p, p, p + size);
+        }
+    };
+
+    struct imstream
+        : virtual membuf
+        , std::istream
+    {
+        imstream(const uint8_t* base, size_t size)
+            : membuf(base, size)
+            , std::istream(static_cast<std::streambuf*>(this))
+        {
+        }
+    };
+
     /**
      * @brief Resource index
      * Key: Path, Val:Pair<Offset,Size>
@@ -115,6 +135,7 @@ struct EmbedResource
 
     EmbedResource(const Index index, const uint8_t* block);
     EmbedResource(const uint8_t* index, const uint8_t* block);
+    virtual ResourceStream get(const ResourceLocation& loc) override;
 
     static Index _make_index(const uint8_t* index);
 
@@ -129,18 +150,10 @@ struct EmbedResource
     static std::u16string _get_path(const uint8_t* index, size_t& offset);
 };
 
-struct EmbedProvider : public ResourceProvider
-{
-    const std::unique_ptr<EmbedResource> res;
-
-    EmbedProvider(const std::unique_ptr<const EmbedResource> res);
-    virtual ResourceStream get(const ResourceLocation& loc) override;
-};
-
-struct FileProvider : public ResourceProvider
+struct FileResource : public ResourceProvider
 {
     const std::filesystem::path root;
 
-    FileProvider(const std::u16string root);
+    FileResource(const std::u16string root);
     virtual ResourceStream get(const ResourceLocation& loc) override;
 };

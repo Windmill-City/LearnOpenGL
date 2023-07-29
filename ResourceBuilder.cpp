@@ -78,9 +78,9 @@ int main(int argc, char* argv[])
         // Resource path
         auto path = std::filesystem::relative(it, EMBED_ASSETS_DIR).u16string();
         std::replace(path.begin(), path.end(), '\\', '/');
-        auto path_s = (path.size() + 1) * sizeof(std::u16string::value_type);
+        auto path_s = path.size();
         indexAssets.write((char*)&path_s, sizeof(path_s));
-        indexAssets.write((char*)path.data(), path_s);
+        indexAssets.write((char*)path.data(), path_s * sizeof(std::u16string::value_type));
 
         // Resource size
         size_t file_s = fs.tellg();
