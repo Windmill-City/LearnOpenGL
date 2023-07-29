@@ -46,12 +46,7 @@ int main()
 
     // ResourceManager Start
     ResourceManager resMan;
-    auto              loc    = ResourceLocation(u"embed:shader/FragmentShader.txt");
-    auto              stream = resMan.get(loc);
-    std::stringstream ss;
-    ss << stream->rdbuf();
-    std::cout << ss.str() << std::endl;
-
+    auto            stream = resMan.get(ResourceLocation(u"embed:shader/FragmentShader.txt"));
     // ResourceManager End
 
     // TriRenderer

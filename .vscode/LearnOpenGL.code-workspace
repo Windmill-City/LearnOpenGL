@@ -80,7 +80,9 @@
 			"chrono": "cpp",
 			"filesystem": "cpp",
 			"forward_list": "cpp",
-			"iomanip": "cpp"
+			"iomanip": "cpp",
+			"array": "cpp",
+			"codecvt": "cpp"
 		},
 		"cSpell.words": [
 			"imstream"

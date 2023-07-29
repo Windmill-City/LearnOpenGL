@@ -97,22 +97,18 @@ struct EmbedResource : public ResourceProvider
 {
     struct membuf : std::streambuf
     {
-        membuf(const uint8_t* base, size_t size)
-        {
-            char* p(reinterpret_cast<char*>(const_cast<uint8_t*>(base)));
-            this->setg(p, p, p + size);
-        }
+        membuf(const uint8_t* base, size_t size);
+        pos_type seekoff(off_type               _Off,
+                         std::ios_base::seekdir _Way,
+                         std::ios_base::openmode = std::ios_base::in | std::ios_base::out) override;
+        pos_type seekpos(pos_type, std::ios_base::openmode = std::ios_base::in | std::ios_base::out) override;
     };
 
     struct imstream
         : virtual membuf
         , std::istream
     {
-        imstream(const uint8_t* base, size_t size)
-            : membuf(base, size)
-            , std::istream(static_cast<std::streambuf*>(this))
-        {
-        }
+        imstream(const uint8_t* base, size_t size);
     };
 
     /**

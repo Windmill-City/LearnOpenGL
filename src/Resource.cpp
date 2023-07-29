@@ -82,6 +82,46 @@ ResourceStream FileResource::get(const ResourceLocation& loc)
     return stream;
 }
 
+EmbedResource::membuf::membuf(const uint8_t* base, size_t size)
+{
+    char* p(reinterpret_cast<char*>(const_cast<uint8_t*>(base)));
+    this->setg(p, p, p + size);
+}
+
+EmbedResource::membuf::pos_type
+EmbedResource::membuf::seekoff(off_type _Off, std::ios_base::seekdir _Way, std::ios_base::openmode _Mode)
+{
+    if (_Mode & std::ios_base::in)
+    {
+        char* _Next;
+        switch (_Way)
+        {
+        case std::ios_base::beg: _Next = eback() + _Off; break;
+        case std::ios_base::cur: _Next = gptr() + _Off; break;
+        case std::ios_base::end: _Next = egptr() + _Off; break;
+        default: return pos_type(off_type(-1));
+        }
+
+        if (_Next >= eback() && _Next <= egptr())
+        {
+            setg(eback(), _Next, egptr());
+            return static_cast<pos_type>(_Next - eback());
+        }
+    }
+    return pos_type(off_type(-1));
+}
+
+EmbedResource::membuf::pos_type EmbedResource::membuf::seekpos(pos_type _Pos, std::ios_base::openmode _Mode)
+{
+    return seekoff(_Pos, std::ios_base::beg, _Mode);
+}
+
+EmbedResource::imstream::imstream(const uint8_t* base, size_t size)
+    : membuf(base, size)
+    , std::istream(static_cast<std::streambuf*>(this))
+{
+}
+
 EmbedResource::EmbedResource(const Index index, const uint8_t* block)
     : index(index)
     , block(block)
@@ -121,8 +161,6 @@ EmbedResource::Index EmbedResource::_make_index(const uint8_t* index)
         auto e_hash   = std::hash<std::u16string>{}(e_path);
 
         _index.emplace(e_path, std::pair(e_offset, e_size));
-        std::wcout << "Path: " << (wchar_t*)e_path.c_str() << " Hash: " << e_hash << " Offset: " << e_offset
-                   << " Size: " << e_size << std::endl;
     }
 
     return _index;
