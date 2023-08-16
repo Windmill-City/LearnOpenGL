@@ -1,34 +1,8 @@
-#include "TriRenderer.hpp"
+#include "Render.hpp"
 #include <format>
 #include <fstream>
 #include <iostream>
 #include <string>
-
-float vertices[] = {
-    // clang-format off
-    // 位置              // 颜色
-     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 右下
-    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // 左下
-     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // 顶部
-    // clang-format on
-};
-
-unsigned int indices[] = {
-    // 注意索引从0开始!
-    // 此例的索引(0,1,2,3)就是顶点数组vertices的下标，
-    // 这样可以由下标代表顶点组合成矩形
-
-    // clang-format off
-    0, 1, 2, // 第一个三角形
-    // clang-format on
-};
-float texCoords[] = {
-    // clang-format off
-    0.0f, 0.0f, // 左下角
-    1.0f, 0.0f, // 右下角
-    0.5f, 1.0f // 上中
-    // clang-format on
-};
 
 unsigned int VAO;
 
