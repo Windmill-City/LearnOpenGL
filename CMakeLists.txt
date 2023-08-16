@@ -6,6 +6,11 @@ project(LearnOpenGL)
 # ####################################
 set(CMAKE_CXX_STANDARD 20)
 
+if(MSVC)
+  # Use Static Runtime Library
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
 # ####################################
 # Dependencies
 # ####################################
@@ -28,6 +33,14 @@ target_link_libraries(LearnOpenGL PRIVATE glfw glad)
 add_custom_command(TARGET LearnOpenGL POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/assets $<TARGET_FILE_DIR:LearnOpenGL>/assets
 )
+
+# Remove console window on Release
+if(WIN32)
+    set_target_properties(LearnOpenGL
+        PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE"
+        LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
+    )
+endif(WIN32)
 
 # ####################################
 # Embed Assets Build Tools
