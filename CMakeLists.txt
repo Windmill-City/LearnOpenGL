@@ -7,8 +7,8 @@ project(LearnOpenGL)
 set(CMAKE_CXX_STANDARD 20)
 
 if(MSVC)
-  # Use Static Runtime Library
-  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    # Use Static Runtime Library
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
 # ####################################
@@ -45,7 +45,7 @@ endif(WIN32)
 # ####################################
 # Embed Assets Build Tools
 # ####################################
-add_executable(ResourceBuilder ResourceBuilder.cpp)
+add_executable(ResourceBuilder EXCLUDE_FROM_ALL ResourceBuilder.cpp)
 target_include_directories(ResourceBuilder PRIVATE include)
 
 # Build embed assets
@@ -70,3 +70,19 @@ endif(MSVC)
 
 target_link_libraries(LearnOpenGL PRIVATE ${CMAKE_BINARY_DIR}/indexAssets ${CMAKE_BINARY_DIR}/blockAssets)
 add_dependencies(LearnOpenGL BuildEmbed)
+
+# ####################################
+# Test
+# ####################################
+enable_testing()
+
+# GTest
+set(GTEST ctest/gtest/googletest)
+add_library(GTEST STATIC EXCLUDE_FROM_ALL ${GTEST}/src/gtest-all.cc)
+target_include_directories(GTEST PUBLIC ${GTEST}/include ${GTEST})
+
+# CodeCvt
+add_executable(T_CodeCvt EXCLUDE_FROM_ALL ctest/T_CodeCvt.cpp src/CodeCvt.cpp)
+target_include_directories(T_CodeCvt PRIVATE include)
+target_link_libraries(T_CodeCvt PRIVATE GTEST)
+add_test(NAME T_CodeCvt COMMAND $<TARGET_FILE:T_CodeCvt>)
