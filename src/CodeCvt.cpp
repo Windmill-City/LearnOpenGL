@@ -1,16 +1,11 @@
 #include "CodeCvt.hpp"
 
-std::u16string CodeCvt::to_u16string(const std::wstring_view u16) noexcept
-{
-    return std::u16string(u16.begin(), u16.end());
-}
-
-std::u16string CodeCvt::to_u16string(const std::string_view u8) noexcept
+std::wstring CodeCvt::to_wstring(const std::string_view u8) noexcept
 {
     // extra codepoint size
-    size_t          cp_s = 0;
-    char16_t        ch16;
-    u16stringstream ss;
+    size_t             cp_s = 0;
+    wchar_t            ch16;
+    std::wstringstream ss;
     for (char ch8 : u8)
     {
         // UTF-8 CodePoint Masks
@@ -73,18 +68,7 @@ std::u16string CodeCvt::to_u16string(const std::string_view u8) noexcept
     return ss.str();
 }
 
-std::wstring CodeCvt::to_wstring(const std::u16string_view u16) noexcept
-{
-    return std::wstring(u16.begin(), u16.end());
-}
-
-std::wstring CodeCvt::to_wstring(const std::string_view u8) noexcept
-{
-    auto u16 = to_u16string(u8);
-    return to_wstring(u16);
-}
-
-std::string CodeCvt::to_string(const std::u16string_view u16) noexcept
+std::string CodeCvt::to_string(const std::wstring_view u16) noexcept
 {
     std::stringstream ss;
     for (char16_t ch16 : u16)
@@ -114,10 +98,4 @@ std::string CodeCvt::to_string(const std::u16string_view u16) noexcept
     }
 
     return ss.str();
-}
-
-std::string CodeCvt::to_string(const std::wstring_view u16) noexcept
-{
-    auto _u16 = to_u16string(u16);
-    return to_string(_u16);
 }

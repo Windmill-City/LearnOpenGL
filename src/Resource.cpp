@@ -4,18 +4,19 @@
 #include <exception>
 #include <iostream>
 
-const char16_t ResourceLocation::DOMAIN_SEPARATOR = u':';
+const wchar_t ResourceLocation::DOMAIN_SEPARATOR = L':';
 
-ResourceLocation::ResourceLocation(const std::u16string::value_type* key)
-    : ResourceLocation(std::u16string(key))
+ResourceLocation::ResourceLocation(const std::wstring::value_type* key)
+    : ResourceLocation(std::wstring(key))
 {
 }
-ResourceLocation::ResourceLocation(const std::u16string key)
+
+ResourceLocation::ResourceLocation(const std::wstring key)
     : ResourceLocation(getDomain(key), getPath(key))
 {
 }
 
-ResourceLocation::ResourceLocation(const std::u16string domain, const std::u16string path) noexcept
+ResourceLocation::ResourceLocation(const std::wstring domain, const std::wstring path) noexcept
     : domain(domain)
     , path(path)
 {
@@ -31,7 +32,7 @@ bool ResourceLocation::operator<(const ResourceLocation& b) const noexcept
     return this->domain < b.domain || (this->domain == b.domain && this->path < b.path);
 }
 
-std::u16string ResourceLocation::getDomain(const std::u16string key)
+std::wstring ResourceLocation::getDomain(const std::wstring key)
 {
     auto i = key.find_first_of(DOMAIN_SEPARATOR);
     if (i < 0) throw std::invalid_argument("missing domain");
@@ -39,7 +40,7 @@ std::u16string ResourceLocation::getDomain(const std::u16string key)
     return domain;
 }
 
-std::u16string ResourceLocation::getPath(const std::u16string key)
+std::wstring ResourceLocation::getPath(const std::wstring key)
 {
     auto i = key.find_first_of(DOMAIN_SEPARATOR);
     if (i < 0) throw std::invalid_argument("missing domain");
@@ -47,9 +48,9 @@ std::u16string ResourceLocation::getPath(const std::u16string key)
     return path;
 }
 
-const std::u16string ResourceManager::DEFAULT_ASSETS_DIR = u"assets";
-const std::u16string ResourceManager::DEFAULT_DOMAIN     = u"default";
-const std::u16string ResourceManager::EMBED_DOMAIN       = u"embed";
+const std::wstring ResourceManager::DEFAULT_ASSETS_DIR = L"assets";
+const std::wstring ResourceManager::DEFAULT_DOMAIN     = L"default";
+const std::wstring ResourceManager::EMBED_DOMAIN       = L"embed";
 
 extern "C" const uint8_t _embed_indexAssets[];
 extern "C" const uint8_t _embed_blockAssets[];
@@ -74,7 +75,7 @@ ResourceStream ResourceManager::get(const ResourceLocation& loc)
     return {};
 }
 
-FileResource::FileResource(const std::u16string root)
+FileResource::FileResource(const std::wstring root)
     : root(root)
 {
 }
@@ -162,7 +163,7 @@ EmbedResource::Index EmbedResource::_make_index(const uint8_t* index)
         auto e_path   = _get_path(index, offset);
         auto e_size   = _get<size_t>(index, offset);
         auto e_offset = _get<size_t>(index, offset);
-        auto e_hash   = std::hash<std::u16string>{}(e_path);
+        auto e_hash   = std::hash<std::wstring>{}(e_path);
 
         _index.emplace(e_path, std::pair(e_offset, e_size));
     }
@@ -170,13 +171,13 @@ EmbedResource::Index EmbedResource::_make_index(const uint8_t* index)
     return _index;
 }
 
-std::u16string EmbedResource::_get_path(const uint8_t* index, size_t& offset)
+std::wstring EmbedResource::_get_path(const uint8_t* index, size_t& offset)
 {
     // String size
     auto str_s = _get<size_t>(index, offset);
 
-    std::u16string str((std::u16string::value_type*)&index[offset], str_s);
-    offset += str_s * sizeof(std::u16string::value_type);
+    std::wstring str((std::wstring::value_type*)&index[offset], str_s);
+    offset += str_s * sizeof(std::wstring::value_type);
 
     return str;
 }
