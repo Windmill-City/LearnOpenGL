@@ -5,10 +5,10 @@
 
 #include "Shader.hpp"
 
-struct Render
+struct Renderer
 {
-    const Shader shader;
+    Shader DefaultShader;
 
-    Render(Shader shader);
-    void render();
+    Renderer();
+    void newFrame();
 };

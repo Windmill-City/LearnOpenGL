@@ -15,12 +15,12 @@ struct ResourceLocation
      * @brief Resource n
      * eg: default:shader/VertexShader.txt, the domain is 'default'
      */
-    const std::wstring domain;
+    const std::wstring Domain;
     /**
      * @brief Resource path
      * eg: default:shader/VertexShader.txt, the path is 'shader/VertexShader.txt'
      */
-    const std::wstring path;
+    const std::wstring Path;
 
     /**
      * @brief Construct a new Resource Location object
@@ -94,7 +94,7 @@ struct ResourceManager : public ResourceProvider
      * @brief Domain providers
      * Key: Domain, Value: Provider
      */
-    ProviderHolder providers;
+    ProviderHolder Providers;
 
     ResourceManager();
     virtual ResourceStream get(const ResourceLocation& loc) override;
@@ -122,25 +122,25 @@ struct EmbedResource : public ResourceProvider
      * @brief Resource index
      * Key: Path, Val:Pair<Offset,Size>
      */
-    using Index = std::unordered_map<std::wstring, const std::pair<size_t, size_t>>;
+    using IndexHolder = std::unordered_map<std::wstring, const std::pair<size_t, size_t>>;
 
     /**
      * @brief Resource domain
      *
      */
-    const std::wstring   domain;
+    const std::wstring Domain;
     /**
      * @brief Resource block, contains continuously stored files
      *
      */
-    const uint8_t*       block;
-    const Index          index;
+    const uint8_t*     Block;
+    const IndexHolder  Index;
 
-    EmbedResource(const Index index, const uint8_t* block);
+    EmbedResource(const IndexHolder index, const uint8_t* block);
     EmbedResource(const uint8_t* index, const uint8_t* block);
     virtual ResourceStream get(const ResourceLocation& loc) override;
 
-    static Index _make_index(const uint8_t* index);
+    static IndexHolder _make_index(const uint8_t* index);
 
     template <class T, typename = std::enable_if_t<std::is_trivial_v<T>>>
     static T _get(const uint8_t* index, size_t& offset)
@@ -155,7 +155,7 @@ struct EmbedResource : public ResourceProvider
 
 struct FileResource : public ResourceProvider
 {
-    const std::filesystem::path root;
+    const std::filesystem::path Root;
 
     FileResource(const std::wstring root);
     virtual ResourceStream get(const ResourceLocation& loc) override;

@@ -17,19 +17,19 @@ ResourceLocation::ResourceLocation(const std::wstring key)
 }
 
 ResourceLocation::ResourceLocation(const std::wstring domain, const std::wstring path) noexcept
-    : domain(domain)
-    , path(path)
+    : Domain(domain)
+    , Path(path)
 {
 }
 
 bool ResourceLocation::operator==(const ResourceLocation& b) const noexcept
 {
-    return this->domain == b.domain && this->path == b.path;
+    return this->Domain == b.Domain && this->Path == b.Path;
 }
 
 bool ResourceLocation::operator<(const ResourceLocation& b) const noexcept
 {
-    return this->domain < b.domain || (this->domain == b.domain && this->path < b.path);
+    return this->Domain < b.Domain || (this->Domain == b.Domain && this->Path < b.Path);
 }
 
 std::wstring ResourceLocation::getDomain(const std::wstring key)
@@ -58,16 +58,16 @@ extern "C" const uint8_t _embed_blockAssets[];
 ResourceManager::ResourceManager()
 {
     auto embed_res = std::make_unique<EmbedResource>(_embed_indexAssets, _embed_blockAssets);
-    providers.emplace(EMBED_DOMAIN, std::move(embed_res));
+    Providers.emplace(EMBED_DOMAIN, std::move(embed_res));
 
     auto default_res = std::make_unique<FileResource>(DEFAULT_ASSETS_DIR);
-    providers.emplace(DEFAULT_DOMAIN, std::move(default_res));
+    Providers.emplace(DEFAULT_DOMAIN, std::move(default_res));
 }
 
 ResourceStream ResourceManager::get(const ResourceLocation& loc)
 {
-    auto it = providers.find(loc.domain);
-    if (it != providers.end())
+    auto it = Providers.find(loc.Domain);
+    if (it != Providers.end())
     {
         return it->second->get(loc);
     }
@@ -76,13 +76,13 @@ ResourceStream ResourceManager::get(const ResourceLocation& loc)
 }
 
 FileResource::FileResource(const std::wstring root)
-    : root(root)
+    : Root(root)
 {
 }
 
 ResourceStream FileResource::get(const ResourceLocation& loc)
 {
-    auto stream = std::make_unique<std::ifstream>(root / loc.path, std::ios_base::binary);
+    auto stream = std::make_unique<std::ifstream>(Root / loc.Path, std::ios_base::binary);
     if (stream->fail()) return {};
     return stream;
 }
@@ -127,9 +127,9 @@ EmbedResource::imstream::imstream(const uint8_t* base, size_t size)
 {
 }
 
-EmbedResource::EmbedResource(const Index index, const uint8_t* block)
-    : index(index)
-    , block(block)
+EmbedResource::EmbedResource(const IndexHolder index, const uint8_t* block)
+    : Index(index)
+    , Block(block)
 {
 }
 
@@ -140,21 +140,21 @@ EmbedResource::EmbedResource(const uint8_t* index, const uint8_t* block)
 
 ResourceStream EmbedResource::get(const ResourceLocation& loc)
 {
-    auto it = index.find(loc.path);
-    if (it != index.end())
+    auto it = Index.find(loc.Path);
+    if (it != Index.end())
     {
         auto offset = it->second.first;
         auto size   = it->second.second;
 
-        auto stream = std::make_unique<imstream>(&block[offset], size);
+        auto stream = std::make_unique<imstream>(&Block[offset], size);
         return stream;
     }
     return {};
 }
 
-EmbedResource::Index EmbedResource::_make_index(const uint8_t* index)
+EmbedResource::IndexHolder EmbedResource::_make_index(const uint8_t* index)
 {
-    EmbedResource::Index _index;
+    EmbedResource::IndexHolder _index;
 
     size_t offset = 0;
     auto   count  = _get<size_t>(index, offset);

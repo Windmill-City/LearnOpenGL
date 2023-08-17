@@ -2,11 +2,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include <Render.hpp>
-#include <Resource.hpp>
+#include "Main.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -45,15 +41,7 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     // GLAD Init End
 
-    // ResourceManager Start
-    ResourceManager resMan;
-    // ResourceManager End
-
-    // Render
-    auto   fShader = resMan.get(L"embed:shader/FragmentShader.txt");
-    auto   vShader = resMan.get(L"embed:shader/VertexShader.txt");
-    Shader shader(std::move(vShader), std::move(fShader));
-    auto   renderer = Render(std::move(shader));
+    MainContext::Main.setup();
 
     // Event Loop
     while (!glfwWindowShouldClose(window))
@@ -64,7 +52,7 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        renderer.render();
+        MainContext::Main.Render.newFrame();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -82,4 +70,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+}
+
+MainContext MainContext::Main = MainContext();
+
+void MainContext::setup()
+{
 }

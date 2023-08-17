@@ -1,22 +1,14 @@
 #pragma once
 
-#include <glad/glad.h>
-
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <stdint.h>
-
 #include "Resource.hpp"
 
 struct Shader
 {
   protected:
-    unsigned int ID;
+    unsigned int ProgramID;
 
   public:
-    Shader(ResourceStream vShader, ResourceStream fShader);
+    Shader() = default;
     ~Shader();
 
     Shader(Shader&& _Right);
