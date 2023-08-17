@@ -5,14 +5,15 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <Render.hpp>
 #include <Resource.hpp>
-#include <TriRenderer.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
 int main()
 {
+    setlocale(LC_ALL, ".UTF-8");
     // GLFW Init Start
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -48,11 +49,11 @@ int main()
     ResourceManager resMan;
     // ResourceManager End
 
-    // TriRenderer
-    auto   vShader = resMan.get(u"embed:shader/VertexShader.txt");
-    auto   fShader = resMan.get(u"embed:shader/FragmentShader.txt");
+    // Render
+    auto   fShader = resMan.get(L"embed:shader/FragmentShader.txt");
+    auto   vShader = resMan.get(L"embed:shader/VertexShader.txt");
     Shader shader(std::move(vShader), std::move(fShader));
-    auto renderer = TriRenderer(std::move(shader));
+    auto   renderer = Render(std::move(shader));
 
     // Event Loop
     while (!glfwWindowShouldClose(window))

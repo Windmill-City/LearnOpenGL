@@ -6,7 +6,7 @@
 
 unsigned int VAO;
 
-TriRenderer::TriRenderer(Shader shader)
+Render::Render(Shader shader)
     : shader(std::move(shader))
 {
     // VAO
@@ -17,13 +17,11 @@ TriRenderer::TriRenderer(Shader shader)
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // EBO
     unsigned int EBO;
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Vertex Attribute
     // 位置属性
@@ -37,7 +35,7 @@ TriRenderer::TriRenderer(Shader shader)
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-void TriRenderer::render()
+void Render::render()
 {
     shader.use();
 

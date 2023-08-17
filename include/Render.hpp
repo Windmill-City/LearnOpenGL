@@ -5,10 +5,10 @@
 
 #include "Shader.hpp"
 
-struct TriRenderer
+struct Render
 {
     const Shader shader;
 
-    TriRenderer(Shader shader);
+    Render(Shader shader);
     void render();
 };
