@@ -6,10 +6,11 @@ project(LearnOpenGL)
 # ####################################
 set(CMAKE_CXX_STANDARD 20)
 
-if(MSVC)
-    # Use Static Runtime Library
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-endif()
+# Use Static Runtime Library
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 # ####################################
 # Dependencies
@@ -80,9 +81,3 @@ enable_testing()
 set(GTEST ctest/gtest/googletest)
 add_library(GTEST STATIC EXCLUDE_FROM_ALL ${GTEST}/src/gtest-all.cc)
 target_include_directories(GTEST PUBLIC ${GTEST}/include ${GTEST})
-
-# CodeCvt
-add_executable(T_CodeCvt EXCLUDE_FROM_ALL ctest/T_CodeCvt.cpp src/CodeCvt.cpp)
-target_include_directories(T_CodeCvt PRIVATE include)
-target_link_libraries(T_CodeCvt PRIVATE GTEST)
-add_test(NAME T_CodeCvt COMMAND $<TARGET_FILE:T_CodeCvt>)
