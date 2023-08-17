@@ -46,12 +46,12 @@ endif(WIN32)
 # ####################################
 # Embed Assets Build Tools
 # ####################################
-add_executable(ResourceBuilder EXCLUDE_FROM_ALL ResourceBuilder.cpp)
+add_executable(ResourceBuilder EXCLUDE_FROM_ALL builder/ResourceBuilder.cpp)
 target_include_directories(ResourceBuilder PRIVATE include)
 
 # Build embed assets
 if(MSVC)
-    add_executable(MSVC_bin2obj MSVC_bin2obj.cpp)
+    add_executable(MSVC_bin2obj builder/MSVC_bin2obj.cpp)
     target_include_directories(MSVC_bin2obj PRIVATE include)
 
     add_custom_target(BuildEmbed
@@ -79,5 +79,10 @@ enable_testing()
 
 # GTest
 set(GTEST ctest/gtest/googletest)
-add_library(GTEST STATIC EXCLUDE_FROM_ALL ${GTEST}/src/gtest-all.cc)
-target_include_directories(GTEST PUBLIC ${GTEST}/include ${GTEST})
+add_library(gtest STATIC EXCLUDE_FROM_ALL ${GTEST}/src/gtest-all.cc)
+target_include_directories(gtest PUBLIC ${GTEST}/include ${GTEST})
+
+# Unicode test
+add_executable(T_Unicode ctest/T_Unicode.cpp)
+target_include_directories(T_Unicode PRIVATE include)
+target_link_libraries(T_Unicode PRIVATE gtest)

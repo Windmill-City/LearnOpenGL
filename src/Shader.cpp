@@ -7,10 +7,10 @@ Shader::~Shader()
     glDeleteProgram(ProgramID);
 }
 
-Shader::Shader(Shader&& _Right)
-    : ProgramID(_Right.ProgramID)
+Shader::Shader(Shader&& _right)
+    : ProgramID(_right.ProgramID)
 {
-    _Right.ProgramID = 0;
+    _right.ProgramID = 0;
 }
 
 void Shader::use() const

@@ -11,7 +11,7 @@ struct Shader
     Shader() = default;
     ~Shader();
 
-    Shader(Shader&& _Right);
+    Shader(Shader&& _right);
     Shader(const Shader&) = delete;
 
     /**

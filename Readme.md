@@ -13,10 +13,13 @@ My learn OpenGL
 | Encoding  | Codepoint format in bytes                    | UTF-8; UTF-16; ANSI;  |
 ---
 
+### Common Regulations
+
 Following table shows the encoding of the strings depends on their physical location:
 
 | Physical Location | Encoding |
 | ----------------- | -------- |
+| Network           | UTF-8    |
 | Disk              | UTF-8    |
 | Memory(Windows)   | UTF-16   |
 | Memory(Linux)     | UTF-32   |
@@ -36,9 +39,9 @@ Following table shows the encoding of the strings depends on their storage class
 
 Note: Encoding here is **NOT** regulated by any standard! This regulation only suits in **MY** program!
 
-Note: These string classes won't deal with encodings, which means `split()`,`length()`, `size()`, are base on **bytes** not codepoints.
+Note: These classes knows nothing about encodings, and so they **CAN'T** deal with **Variable Length** encodings.
 
----
+### Locale
 
 Before using some locale dependent C APIs, we need to set correct locale to ensure correct codepage and encoding are used. The following code do this thing:
 
