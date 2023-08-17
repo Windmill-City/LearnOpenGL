@@ -38,13 +38,13 @@ Note: Encoding here is **NOT** regulated by any standard! This regulation only s
 
 ---
 
-Before passing strings through OS-dependent APIs, we need to set the correct locale to ensure that the correct codepage and encoding method are used. The following code sets the active codepage to Unicode and the encoding method to `UTF-8`.
+Before using some locale dependent C APIs, we need to set correct locale to ensure correct codepage and encoding are used.
 
 ```c++
 setlocale(LC_ALL, ".UTF-8");
 ```
 
-Then the locale-dependent functions, such as `mbstowcs`; `wcstombs`, will return properly translated strings. The strings passed to the OS-dependent APIs will properly translated. (On Windows, these are the ANSI APIs.)
+Then the locale-dependent functions, such as `mbstowcs`; `wcstombs`, will return properly translated strings.
 
 Note: Remember to set the encoding for the compiler, for example, use `/utf8` for MSVC.
 
@@ -56,9 +56,9 @@ The following code is **Needless** to call, as its default value is `C`, which m
 std::locale::global(std::locale(".UTF-8"));
 ```
 
-### Details
+### Windows
 
-Take Windows for excample, its API has two encoding versions, one uses the ANSI encoding, and the other uses the `Unicode` codepage and `UTF-16` encoding.
+On Windows platform, its API has two encoding versions, one uses the ANSI encoding, and the other uses the `Unicode` codepage and `UTF-16` encoding.
 
 #### ANSI
 
@@ -73,15 +73,11 @@ Language specific codepages:
 | Big5     | Traditional Chinese |
 | S-JIS    | Japanese            |
 
-```c++
-setlocale(LC_ALL, ".UTF-8");
-```
-
-The code above actually sets the codepage the ANSI API uses.
+ANSI codepages can be different on different computers, or can be changed for a single computer, leading to data corruption. For the most consistent results, applications should use Unicode based API.
 
 #### Unicode
 
-ANSI uses same encoding method across different codepages, while Unicode has unique codepage but has different encodings.
+While ANSI uses same encoding method across different codepages, Unicode has only one unique codepage but has different encodings.
 
 Encodings:
 | Encoding      | Length   | Range                 | Codepoint Size(Byte) |
@@ -90,12 +86,6 @@ Encodings:
 | UCS-2         | Fixed    | \u0000 ~ \uFFFF       | 2                    |
 | UTF-16        | Variable | Full Unicode Codepage | 2 / 4                |
 | UTF-32(UCS-4) | Fixed    | Full Unicode Codepage | 4                    |
-
-The default codepage and encoding method depend on the user’s settings, which means they can vary. If a fixed codepage and encoding method are not set, it is necessary to perform complicated codepage and encoding conversions every time, which can be time-consuming and error-prone.
-
-### Why not UTF-8 in memory
-
-Using a fixed-length encoding can make string operations faster and simpler without the complexity of dealing with variable-length encodings.
 
 ## Sequence
 
