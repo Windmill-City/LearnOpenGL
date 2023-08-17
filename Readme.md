@@ -6,7 +6,7 @@ My learn OpenGL
 
 ### Glossary
 
-| Word      | Explation                                    | Example               |
+| Word      | Meaning                                      | Example               |
 | --------- | -------------------------------------------- | --------------------- |
 | Codepoint | Numerical value maps to a specific character | \u0000                |
 | Codepage  | Collection of codepoints                     | GBK; GB2312; Unicode; |
