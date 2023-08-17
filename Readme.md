@@ -40,7 +40,7 @@ Note: These string classes won't deal with encodings, which means `split()`,`len
 
 ---
 
-Before using some locale dependent C APIs, we need to set correct locale to ensure correct codepage and encoding are used.
+Before using some locale dependent C APIs, we need to set correct locale to ensure correct codepage and encoding are used. The following code do this thing:
 
 ```c++
 setlocale(LC_ALL, ".UTF-8");
