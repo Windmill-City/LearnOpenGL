@@ -6,11 +6,11 @@ My learn OpenGL
 
 ### Glossary
 
-| Word      | Explation                                                |
-| --------- | -------------------------------------------------------- |
-| Codepoint | Numerical value maps to a specific character, eg: \u0000 |
-| Codepage  | Collection of codepoints, eg: GBK; GB2312; Unicode;      |
-| Encoding  | Codepoint format in bytes, eg: UTF-8; UTF-16; ANSI;      |
+| Word      | Explation                                    | Example               |
+| --------- | -------------------------------------------- | --------------------- |
+| Codepoint | Numerical value maps to a specific character | \u0000                |
+| Codepage  | Collection of codepoints                     | GBK; GB2312; Unicode; |
+| Encoding  | Codepoint format in bytes                    | UTF-8; UTF-16; ANSI;  |
 ---
 
 Following table shows the encoding of the strings depends on their physical location:
