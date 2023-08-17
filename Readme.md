@@ -36,6 +36,8 @@ Following table shows the encoding of the strings depends on their storage class
 
 Note: Encoding here is **NOT** regulated by any standard! This regulation only suits in **MY** program!
 
+Note: These string classes won't deal with encodings, which means `split()`,`length()`, `size()`, are base on **bytes** not codepoints.
+
 ---
 
 Before using some locale dependent C APIs, we need to set correct locale to ensure correct codepage and encoding are used.
