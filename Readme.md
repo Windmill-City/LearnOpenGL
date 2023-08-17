@@ -20,6 +20,7 @@ Following table shows the encoding of the strings depends on their physical loca
 | Disk              | UTF-8    |
 | Memory(Windows)   | UTF-16   |
 | Memory(Linux)     | UTF-32   |
+
 Note: Encoding here is **NOT** regulated by any standard! This regulation only suits in **MY** program!
 
 Following table shows the encoding of the strings depends on their storage class:
@@ -32,6 +33,7 @@ Following table shows the encoding of the strings depends on their storage class
 | std::u8string         | UTF-8    |
 | std::u16string        | UTF-16   |
 | std::u32string        | UTF-32   |
+
 Note: Encoding here is **NOT** regulated by any standard! This regulation only suits in **MY** program!
 
 ---
