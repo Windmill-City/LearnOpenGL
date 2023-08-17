@@ -76,11 +76,11 @@ int main(int argc, char* argv[])
         blockAssets << fs.rdbuf();
 
         // Resource path
-        auto path = std::filesystem::relative(it, EMBED_ASSETS_DIR).u16string();
+        auto path = std::filesystem::relative(it, EMBED_ASSETS_DIR).wstring();
         std::replace(path.begin(), path.end(), '\\', '/');
         auto path_s = path.size();
         indexAssets.write((char*)&path_s, sizeof(path_s));
-        indexAssets.write((char*)path.data(), path_s * sizeof(std::u16string::value_type));
+        indexAssets.write((char*)path.data(), path_s * sizeof(std::wstring::value_type));
 
         // Resource size
         size_t file_s = fs.tellg();
