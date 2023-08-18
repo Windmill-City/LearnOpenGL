@@ -22,7 +22,7 @@ Following table shows the encoding of the strings depends on their physical loca
 | Network           | UTF-8    |
 | Disk              | UTF-8    |
 | Memory(Windows)   | UTF-16   |
-| Memory(Linux)     | UTF-32   |
+| Memory(Linux)     | UTF-8   |
 
 Note: Encoding here is **NOT** regulated by any standard! This regulation only suits in **MY** program!
 
@@ -61,9 +61,7 @@ The following code is **Needless** to call, as its default value is `C`, which m
 std::locale::global(std::locale(".UTF-8"));
 ```
 
-### Windows
-
-On Windows platform, its API has two encoding versions, one uses the ANSI encoding, and the other uses the `Unicode` codepage and `UTF-16` encoding.
+### Common Character Sets
 
 #### ANSI
 
@@ -78,11 +76,11 @@ Language specific codepages:
 | Big5     | Traditional Chinese |
 | S-JIS    | Japanese            |
 
-ANSI codepages can be different on different computers, or can be changed for a single computer, leading to data corruption. For the most consistent results, applications should use Unicode based API.
+ANSI codepages can be different on different computers, or can be changed for a single computer, leading to data corruption. For the most consistent results, applications should use Unicode.
 
 #### Unicode
 
-While ANSI uses same encoding method across different codepages, Unicode has only one unique codepage but has different encodings.
+While ANSI uses same encoding method across different codepages, Unicode has unique codepage but has different encodings.
 
 Encodings:
 | Encoding      | Length   | Range                 | Codepoint Size(Byte) |
